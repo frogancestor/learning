@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+{% extends 'base.html' %}
+{% block content %}
+    <div>
+        Акции {{ stock.name }} ({{ stock.ticker }}) <img src="{{ MEDIA_URL }}/{{ stock.logo }}" width="40" />
+    </div>
+    <div>
+        <form method="POST" action="{% url 'stock:buy' stock.pk %}">
+            {% csrf_token %}
+            {{ form }}
+            <button>Купить</button>
+        </form>
+    </div>
+    <div>
+        <a href="{% url 'stock:list' %}">Назад к списку</a>
+    </div>
+{% endblock %}
+</body>
+</html>

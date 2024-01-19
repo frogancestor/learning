@@ -80,17 +80,18 @@ def stock_sell(request, pk):
         current_cost = acc_stock.average_sell_cost * acc_stock.amount
 
         total_cost = current_cost + sell_cost
-        total_amount = acc_stock.amount - amount
-
-        acc_stock.amount = total_amount
 
         acc_currency, created = AccountCurrency.objects.get_or_create(account=request.user.account, currency=stock.currency,
                                                                     defaults={'amount': 0})
-
-        acc_currency.amount = acc_currency.amount + sell_cost
-        acc_stock.save()
-        acc_currency.save()
-        return redirect('stock:list')
+        if acc_stock.amount < amount:
+            form.add_error(None, f'Вы не можете продать {amount} акций, так как на вашем счету их меньше')
+        else:
+            total_amount = acc_stock.amount - amount
+            acc_stock.amount = total_amount
+            acc_currency.amount = acc_currency.amount + sell_cost            
+            acc_stock.save()
+            acc_currency.save()
+            return redirect('stock:list')
 
     context = {
         'stock': get_object_or_404(Stock, pk=pk),
